@@ -1,21 +1,32 @@
 package com.example.controller;
 
+import java.util.concurrent.ExecutionException;
+
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.example.model.User;
 import com.example.service.UserService;
+//import com.example.websocket.client.ClientMessage;
+//import com.example.websocket.client.HelloClient;
 
 @Controller
 public class LoginController {
+	
+	//private static Logger logger = Logger.getLogger(HelloClient.class);
 	
 	@Autowired
 	private UserService userService;
@@ -65,9 +76,29 @@ public class LoginController {
 		User user = userService.findUserByEmail(auth.getName());
 		modelAndView.addObject("userName", "Welcome " + user.getName() + " " + user.getLastName() + " (" + user.getEmail() + ")");
 		modelAndView.addObject("adminMessage","Content Available Only for Users with Admin Role");
+		
+		//modelAndView.addObject("clientMessage", new ClientMessage());
+		
 		modelAndView.setViewName("admin/home");
 		return modelAndView;
 	}
+	
+//	  @PostMapping("/admin/home")
+//	    public String greetingSubmit(@ModelAttribute ClientMessage clientMessage) throws InterruptedException, ExecutionException {
+//	    	
+//	    	 HelloClient helloClient = new HelloClient();
+//
+//	         ListenableFuture<StompSession> f = helloClient.connect();
+//	         StompSession stompSession = f.get();
+//
+//	         logger.info("Subscribing to greeting topic using session " + stompSession);
+//	         helloClient.subscribeGreetings(stompSession);
+//
+//	         logger.info("Sending hello message" + stompSession);
+//	         helloClient.sendHello(stompSession);
+//	         
+//	        return "result";
+//	    }
 	
 
 }
