@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<title>Admin Page</title>
+<link rel="stylesheet" type="text/css" th:href="@{/css/home.css}" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+	<div class="container">
+
+		<form th:action="@{/logout}" method="get">
+			<button class="btn btn-md btn-danger btn-block" name="registration"
+				type="Submit">Logout</button>
+		</form>
+
+		<div class="panel-group" style="margin-top: 40px">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<span th:utext="${userName}"></span>
+				</div>
+				<div class="panel-body">
+					<img th:src="@{/images/beer.jpg}"
+						class="img-responsive center-block" width="40" height="40"
+						alt="Beer" />
+				</div>
+				<p class="admin-message-text text-center" th:utext="${adminMessage}"></p>
+			</div>
+		</div>
+
+		<h1>Axe 1</h1>
+		<div class="slidecontainer">
+			<input type="range" min="1" max="100" value="50" class="slider"
+				id="axe1">
+			<p>
+				Value: <span id="valAxe1"></span>
+			</p>
+		</div>
+		
+		<h1>Axe 2</h1>
+		<div class="slidecontainer">
+			<input type="range" min="1" max="100" value="50" class="slider"
+				id="axe2">
+			<p>
+				Value: <span id="valAxe2"></span>
+			</p>
+		</div>
+		
+		<h1>Axe 3</h1>
+		<div class="slidecontainer">
+			<input type="range" min="1" max="100" value="50" class="slider"
+				id="axe3">
+			<p>
+				Value: <span id="valAxe3"></span>
+			</p>
+		</div>
+
+
+		<form id="form">
+			<input type="text" id="message">
+			<button type="submit">Send</button>
+		</form>
+
+		<hr>
+
+		<div id="output"></div>
+
+		<script>
+			var inputBox = document.getElementById("message");
+			var output = document.getElementById("output");
+			var form = document.getElementById("form");
+			try {
+				var host = "ws://127.0.0.1:5678/";
+				console.log("Host:", host);
+				var s = new WebSocket(host);
+				s.onopen = function(e) {
+					console.log("Socket opened.");
+				};
+				s.onclose = function(e) {
+					console.log("Socket closed.");
+				};
+				s.onmessage = function(e) {
+					console.log("Socket message:", e.data);
+					var p = document.createElement("p");
+					p.innerHTML = e.data;
+					output.appendChild(p);
+				};
+				s.onerror = function(e) {
+					console.log("Socket error:", e);
+				};
+			} catch (ex) {
+				console.log("Socket exception:", ex);
+			}
+			form.addEventListener("submit", function(e) {
+				e.preventDefault();
+				s.send(inputBox.value);
+				inputBox.value = "";
+			}, false)
+
+			var sliderAxe1 = document.getElementById("axe1");
+			var outputAxe1 = document.getElementById("valAxe1");
+			outputAxe1.innerHTML = sliderAxe1.value;
+			
+			var sliderAxe2 = document.getElementById("axe2");
+			var outputAxe2 = document.getElementById("valAxe2");
+			outputAxe2.innerHTML = sliderAxe2.value;
+			
+			var sliderAxe3 = document.getElementById("axe3");
+			var outputAxe3 = document.getElementById("valAxe3");
+			outputAxe3.innerHTML = sliderAxe3.value;
+
+			sliderAxe1.oninput = function() {
+				outputAxe1.innerHTML = this.value;
+				s.send(JSON.stringify({
+					axe1 : this.value
+				}));
+
+			}
+			sliderAxe2.oninput = function() {
+				outputAxe2.innerHTML = this.value;
+				s.send(JSON.stringify({
+					axe2 : this.value
+				}));
+
+			}
+			sliderAxe3.oninput = function() {
+				outputAxe3.innerHTML = this.value;
+				s.send(JSON.stringify({
+					axe3 : this.value
+				}));
+
+			}
+		</script>
+
+	</div>
+</body>
+</html>
